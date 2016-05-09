@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "HJLocalPushManager.h"
 
 @interface AppDelegate ()
 
@@ -17,7 +18,31 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [[HJLocalPushManager sharedInstance] registerLocalNotification:10];
+    
     return YES;
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+
+    NSLog(@"noti:%@",notification);
+    
+    // 这里真实需要处理交互的地方
+    // 获取通知所带的数据
+    NSString *notMess = [notification.userInfo objectForKey:@"key"];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"本地通知(前台)"
+                                                    message:notMess
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+    
+    // 更新显示的徽章个数
+    NSInteger badge = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    badge--;
+    badge = badge >= 0 ? badge : 0;
+    [UIApplication sharedApplication].applicationIconBadgeNumber = badge;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
